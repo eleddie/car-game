@@ -11,7 +11,7 @@ Car.prototype.update = function () {
     var dir = mousePos.sub(this.pos);
     this.acc.add(dir);
     this.vel.add(this.acc);
-    this.vel.limit(4);
+    this.vel.limit(3);
     this.pos.add(this.vel);
     this.acc.mult(0);
 }

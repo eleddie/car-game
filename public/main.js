@@ -42,7 +42,7 @@ function mousePressed() {
 
 function shoot() {
     var bullet = car.shoot();
-    socket.emit("shot", bullet);
+    //socket.emit("shot", bullet);
     bullets.push({start: frameCount, bullet: bullet});
 }
 
