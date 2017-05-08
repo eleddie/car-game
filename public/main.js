@@ -10,7 +10,7 @@ var socket;
 if(local)
     socket = io.connect("http://192.168.0.105:8080", {'forceNew': true});
 else
-    socket = io.connect("https://console.starter-us-east-1.openshift.com/console/project/car-game/overview:8080", {'forceNew': true});
+    socket = io.connect("http://cargame-car-game.1d35.starter-us-east-1.openshiftapps.com:8080", {'forceNew': true});
 
 var bullets = [];
 var enemies = [];
