@@ -10,6 +10,7 @@ Bullet.prototype.update = function () {
 }
 
 Bullet.prototype.show = function () {
-    fill(0, 255, 30, 80);
+    fill(0, 255, 30, 150);
+    noStroke();
     ellipse(this.pos.x, this.pos.y, 5, 5);
 }

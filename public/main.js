@@ -2,7 +2,7 @@ var car;
 function setup() {
     createCanvas(600, 600);
     background(51);
-    car = new Car(300, 300);
+    car = new Car("", 300, 300, false);
     setEventHandlers();
 }
 
@@ -14,12 +14,10 @@ var enemies = [];
 function draw() {
     background(51);
     car.update();
+    car.show();
     updatePosition(car.pos.x, car.pos.y);
-    fill(255);
-    ellipse(car.pos.x, car.pos.y, 20, 20);
     enemies.forEach(function (enemy) {
-        fill(enemy.r,enemy.g,enemy.b);
-        ellipse(enemy.x, enemy.y, 20, 20);
+        enemy.show();
     });
     for (var i = bullets.length - 1; i >= 0; i--) {
         if (frameCount - bullets[i].start > 100) {
@@ -47,8 +45,8 @@ function shoot() {
 }
 
 
-function updatePosition(x, y) {
-    socket.emit("move player", {x: x, y: y});
+function updatePosition() {
+    socket.emit("move player", {x: car.pos.x, y: car.pos.y, angle: car.angle});
 }
 
 
@@ -78,7 +76,7 @@ function onSocketConnected() {
     enemies = [];
 
     // Send local player data to the game server
-    socket.emit('new player', {x: car.x, y: car.y});
+    socket.emit('new player', {x: car.pos.x, y: car.pos.y, angle: car.angle});
 }
 
 // Socket disconnected
@@ -98,7 +96,7 @@ function onNewPlayer(data) {
     }
 
     // Add new player to the remote players array
-    enemies.push({id: data.id, x: data.x, y: data.y, r: random(255), g: random(255), b: random(255)});
+    enemies.push(new Car(data.id, data.x, data.y, true));
 }
 
 // Move player
@@ -112,8 +110,9 @@ function onMovePlayer(data) {
     }
 
     // Update player position
-    movePlayer.x = data.x;
-    movePlayer.y = data.y;
+    movePlayer.pos.x = data.x;
+    movePlayer.pos.y = data.y;
+    movePlayer.angle = data.angle;
 }
 
 // Remove player

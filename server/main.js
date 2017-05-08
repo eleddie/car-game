@@ -99,12 +99,14 @@ function onMovePlayer(data) {
     // Update player position
     movePlayer.x = data.x;
     movePlayer.y = data.y;
+    movePlayer.angle = data.angle;
 
     // Broadcast updated position to connected socket clients
     this.broadcast.emit('move player', {
         id: movePlayer.id,
         x: movePlayer.x,
-        y: movePlayer.y
+        y: movePlayer.y,
+        angle: movePlayer.angle
     })
 }
 
