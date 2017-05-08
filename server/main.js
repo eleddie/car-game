@@ -8,6 +8,7 @@ var port = 8080;
 app.use(express.static('public'));
 
 var cars = [];
+var bullets = [];
 
 server.listen(port, function () {
     console.log("Server has started on port " + port + "!");
@@ -24,39 +25,42 @@ function onSocketConnection(client) {
     util.log('New player has connected: ' + client.id)
 
     // Listen for client disconnected
-    client.on('disconnect', onClientDisconnect)
+    client.on('disconnect', onClientDisconnect);
 
     // Listen for new player message
-    client.on('new player', onNewPlayer)
+    client.on('new player', onNewPlayer);
 
     // Listen for move player message
-    client.on('move player', onMovePlayer)
+    client.on('move player', onMovePlayer);
+
+    // Listen for player shots
+    client.on('shot', onPlayerShoot);
 }
 
 // Socket client has disconnected
 function onClientDisconnect() {
-    util.log('Player has disconnected: ' + this.id)
+    util.log('Player has disconnected: ' + this.id);
 
-    var removePlayer = playerById(this.id)
+    var removePlayer = playerById(this.id);
 
     // Player not found
     if (!removePlayer) {
-        util.log('Player not found: ' + this.id)
-        return
+        util.log('Player not found: ' + this.id);
+        return;
     }
 
     // Remove player from players array
-    cars.splice(cars.indexOf(removePlayer), 1)
+    cars.splice(cars.indexOf(removePlayer), 1);
 
     // Broadcast removed player to connected socket clients
-    this.broadcast.emit('remove player', {id: this.id})
+    this.broadcast.emit('remove player', {id: this.id});
 }
 
 // New player has joined
 function onNewPlayer(data) {
     // Create a new player
-    var newPlayer = {x: data.x, y: data.y}
-    newPlayer.id = this.id
+    var newPlayer = {x: data.x, y: data.y};
+    newPlayer.id = this.id;
 
     // Broadcast new player to connected socket clients
     this.broadcast.emit('new player', {
@@ -66,34 +70,35 @@ function onNewPlayer(data) {
     });
 
     // Send existing players to the new player
-    var i, existingPlayer
+    var i, existingPlayer;
     for (i = 0; i < cars.length; i++) {
-        existingPlayer = cars[i]
+        existingPlayer = cars[i];
+        ;
         this.emit('new player', {
             id: existingPlayer.id,
             x: existingPlayer.x,
             y: existingPlayer.y
-        })
+        });
     }
 
     // Add new player to the players array
-    cars.push(newPlayer)
+    cars.push(newPlayer);
 }
 
 // Player has moved
 function onMovePlayer(data) {
     // Find player in array
-    var movePlayer = playerById(this.id)
+    var movePlayer = playerById(this.id);
 
     // Player not found
     if (!movePlayer) {
-        util.log('Player not found: ' + this.id)
+        util.log('Player not found: ' + this.id);
         return
     }
 
     // Update player position
-    movePlayer.x = data.x
-    movePlayer.y = data.y
+    movePlayer.x = data.x;
+    movePlayer.y = data.y;
 
     // Broadcast updated position to connected socket clients
     this.broadcast.emit('move player', {
@@ -103,14 +108,19 @@ function onMovePlayer(data) {
     })
 }
 
+// Player shot
+function onPlayerShoot(data) {
+    console.log("Bullet");
+    bullets.push(data);
+    // Broadcast updated position to connected socket clients
+    this.broadcast.emit('shot', bullets);
+}
+
 
 // Find player by ID
 function playerById(id) {
-    for (var i = 0; i < cars.length; i++) {
-        if (cars[i].id === id) {
-            return cars[i]
-        }
-    }
-
-    return false
+    for (var i = 0; i < cars.length; i++)
+        if (cars[i].id === id)
+            return cars[i];
+    return false;
 }
