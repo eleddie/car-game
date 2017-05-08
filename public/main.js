@@ -5,8 +5,13 @@ function setup() {
     car = new Car("", 300, 300, false);
     setEventHandlers();
 }
+var local = false;
+var socket;
+if(local)
+    socket = io.connect("http://192.168.0.105:8080", {'forceNew': true});
+else
+    socket = io.connect("https://console.starter-us-east-1.openshift.com/console/project/car-game/overview:8080", {'forceNew': true});
 
-var socket = io.connect("http://192.168.0.105:8080", {'forceNew': true});
 var bullets = [];
 var enemies = [];
 
